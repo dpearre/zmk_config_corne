@@ -1,0 +1,145 @@
+// Copyright (c) 2022 The ZMK Contributors
+// SPDX-License-Identifier: MIT
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/outputs.h>
+
+// Home row mods macro
+
+#define MAC 0
+#define WIN 1
+#define GAME 2
+#define NPAD 3
+#define MATH 4
+#define FUNC 5
+#define SYMB 6
+#define CONF 7
+
+/ {
+    behaviors {
+        ht: hold_tap {
+            label = "hold_tap";
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <150>;
+            global-quick-tap;
+            bindings = <&kp>, <&kp>;
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <MATH FUNC>;
+            then-layer = <CONF>;
+        };
+    };
+
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        // 0 BASE -- MAC
+        mac {
+            label = "Mac";
+            bindings = <
+                &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
+                &none  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp BSPC  &none
+                &none  &lt MATH Z  &ht LALT X  &ht LCTRL C  &kp V  &lt SYMB B  &lt SYMB N  &kp M  &ht LCTRL COMMA  &kp DOT  &kp RET &none
+                &ht LGUI ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt MATH TAB  &lt FUNC SPACE  &ht RGUI DEL
+            >;
+        };
+
+        // 1 BASE -- WIN
+        win {
+            label = "Windows";
+            bindings = <
+                &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
+                &none  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp BSPC  &none
+                &none  &lt MATH Z  &ht LALT X  &ht LCTRL C  &kp V  &lt SYMB B  &lt SYMB N  &kp M  &ht RCTRL COMMA  &kp DOT  &kp RET &none
+                &ht LCTRL ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt MATH TAB  &lt FUNC SPACE  &ht RCTRL DEL
+            >;
+        };
+
+        // // 2 BASE -- GAME
+        // // @todo
+        game {
+            label = "Game";
+            bindings = <
+                &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
+                &none  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp BSPC  &none
+                &none  &lt MATH Z  &ht LALT X  &ht LCTRL C  &kp V  &lt SYMB B  &lt SYMB N  &kp M  &ht RCTRL COMMA  &kp DOT  &kp RET &none
+                &ht LCTRL ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt MATH TAB  &lt FUNC SPACE  &ht RCTRL DEL
+            >;
+        };
+
+        // 3 BASE -- NPAD
+        numpad {
+            label = "Numpad";
+            bindings = <
+                &none  &none  &none  &none  &none  &none  &kp KP_SLASH &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS &kp DEL
+                &none  &none  &none  &none  &none  &none  &kp ASTRK &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS &kp KP_EQUAL
+                &none  &none  &none  &none  &none  &none  &kp KP_COMMA &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT &kp KP_ENTER
+                &ht LGUI ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt MATH TAB  &lt FUNC SPACE  &lt FUNC KP_N0 
+            >;
+        };
+
+        // 4 MOD -- MATH
+        math {
+            label = "Math";
+            bindings = <
+                &none  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0  &none
+                &none  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0  &none  &kp N4  &kp N5  &kp N6  &none  &none
+                &none  &trans  &kp ASTRK  &kp KP_DIVIDE  &kp PLUS  &kp MINUS  &kp EQUAL &kp N1  &kp N2  &kp N3  &kp ENTER  &none
+                &trans  &trans  &trans  &trans  &trans  &trans 
+            >;
+        };
+
+        // 5 MOD -- FUNC
+        func {
+            label = "Function";
+            bindings = <
+                &none  &none  &kp F1  &kp F4  &kp F7  &kp F10  &kp C_BRI_DN  &kp C_BRI_UP  &kp K_MUTE  &kp K_VOL_DN &kp K_VOL_UP &none
+                &none  &none  &kp F2  &kp F5  &kp F8  &kp F11  &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp F3  &none
+                &none  &none  &kp F3  &kp F6  &kp F9  &kp F12  &kp HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END &none  &none
+                &trans  &trans  &trans  &trans  &trans  &trans 
+            >;
+        };
+
+        // 6 MOD -- SYMB
+        symbolic {
+            label = "Symbol";
+            bindings = <
+                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp LPAR  &kp RPAR  &none
+                &none  &kp GRAVE  &kp LBKT  &kp RBKT  &kp FSLH  &kp BSLH  &kp PIPE  &kp DQT  &kp COLON  &kp MINUS  &kp EQUAL  &none
+                &none  &kp TILDE  &kp LBRC  &kp RBRC  &kp QMARK  &trans  &trans  &kp SQT  &kp SEMI  &kp UNDER  &kp PLUS  &none
+                &trans  &trans  &trans  &trans  &trans  &trans 
+            >;
+        };
+
+        // 7 MOD -- CONF
+        conf {
+            label = "Config";
+            bindings = <
+                &none  &to MAC  &to WIN  &to GAME  &to NPAD  &none  &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none  &bt BT_CLR &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none
+                &trans  &trans  &trans  &trans  &trans  &trans 
+            >;
+        };
+
+        // layer_name {
+        //     bindings = <
+        //         &none &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+        //         &none &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+        //         &none &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+        //         &none  &none  &none  &none  &none  &none
+        //     >;
+        // };
+
+    };
+};
