@@ -29,6 +29,30 @@
             global-quick-tap;
             bindings = <&kp>, <&kp>;
         };
+
+        // convert backspace to delete with shift
+
+        bspc_del: backspace_delete {
+            compatible = "zmk,behavior-mod-morph";
+            label = "BACKSPACE_DELETE";
+            #binding-cells = <0>;
+            bindings = <&kp BACKSPACE>, <&kp DELETE>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        // special hold_tap for the backspace_delete behavior
+        // https://www.reddit.com/r/zmk/comments/12ujlmb/combing_modmorph_and_layer_tap/
+
+        ht_bspc: hold_tap_backspace_delete {
+            label = "hold_tap_backspace_delete";
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <150>;
+            global-quick-tap;
+            bindings = <&mo>, <&bspc_del>;
+        };
     };
 
     conditional_layers {
