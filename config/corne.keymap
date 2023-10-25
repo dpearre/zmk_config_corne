@@ -74,7 +74,7 @@
                 &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
                 &none  &kp A  &ht LALT S  &ht LCTRL D  &lt SYMB F  &lt MATH G  &lt MATH H  &lt SYMB J  &ht RCTRL K  &ht RALT L  &kp SQT &none
                 &none  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &none
-                &ht LGUI ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt FUNC RET &sk RSHIFT  &ht RGUI BSPC
+                &ht LGUI ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt FUNC RET &sk RSHIFT &ht_bspc RGUI 0 
             >;
         };
 
@@ -85,7 +85,7 @@
                 &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
                 &none  &kp A  &ht LALT S  &ht LGUI D  &lt SYMB F  &lt MATH G  &lt MATH H  &lt SYMB J  &ht RGUI K  &ht RALT L  &kp SQT &none
                 &none  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &none
-                &ht LCTRL ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt FUNC RET &sk RSHIFT  &ht RCTRL BSPC
+                &ht LCTRL ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt FUNC RET &sk RSHIFT  &ht_bspc RCTRL 0
             >;
         };
 
@@ -94,10 +94,10 @@
         game {
             label = "Game";
             bindings = <
-                &kp ESC  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &kp BSPC
+                &kp ESC  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &bspc_del 
                 &mo SYMB  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SQT &mo SYMB
                 &mo MATH  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &mo MATH
-                &kp LCTRL &kp SPACE  &lt FUNC TAB  &lt FUNC RET &kp RSHIFT  &ht RCTRL BSPC
+                &kp LCTRL &kp SPACE  &lt FUNC TAB  &lt FUNC RET &kp RSHIFT  &ht_bspc RCTRL 0
             >;
         };
 
@@ -105,7 +105,7 @@
         numpad {
             label = "Numpad";
             bindings = <
-                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp KP_SLASH &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS &kp BSPC
+                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp KP_SLASH &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS &bspc_del
                 &none  &kp TILDE  &none  &none  &none  &none  &kp ASTRK  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS  &kp KP_EQUAL
                 &none  &kp GRAVE  &none  &none  &none  &none  &kp KP_COMMA  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT  &kp KP_ENTER
                 &ht LGUI ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt MATH TAB  &lt FUNC SPACE  &lt FUNC KP_N0 
