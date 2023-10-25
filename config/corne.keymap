@@ -17,7 +17,21 @@
 #define SYMB 6
 #define CONF 7
 
+// still @todo:
+// - finalize gaming layer
+// - set up play/pause/skip (shift behavior for arrow keys?)
+
 / {
+    combos {
+        compatible = "zmk,combos";
+        // use vim's jk combo for escape
+        combo_esc {
+            timeout-ms = <50>;
+            key-positions = <19 20>; // j and k positions
+            bindings = <&kp ESC>;
+        };
+    };
+
     behaviors {
         ht: hold_tap {
             label = "hold_tap";
@@ -55,14 +69,25 @@
         };
     };
 
+    // this tri-layer will toggle the config layer if MATH and SYMB are toggled.
+    // requiring 2 keys might prevent accidental triggers.
+
     conditional_layers {
         compatible = "zmk,conditional-layers";
         tri_layer {
-            if-layers = <MATH FUNC>;
+            if-layers = <MATH SYMB>;
             then-layer = <CONF>;
         };
     };
 
+    // Reference for binding behaviour keywords:
+    // &kp: keypress
+    // &none: no signal
+    // &trans: inherit signal from base layer
+    // &lt: (layer tap) for hold tap behaviors with custom layer changes (Mac, Symbol, etc)
+    // &ht: (custom hold tap) for hold tap behaviors with modal changes (control, alt, shift, etc)
+    // &sk: (sticky key) allows double-tab for sticky behavior
+    // &mo: (momentary layer) changes layer while key is pressed
 
     keymap {
         compatible = "zmk,keymap";
@@ -71,10 +96,10 @@
         mac {
             label = "Mac";
             bindings = <
-                &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
-                &none  &kp A  &ht LALT S  &ht LCTRL D  &lt SYMB F  &lt MATH G  &lt MATH H  &lt SYMB J  &ht RCTRL K  &ht RALT L  &kp SQT &none
-                &none  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &none
-                &ht LGUI ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt FUNC RET &sk RSHIFT &ht_bspc RGUI 0 
+                &none  &ht LCTRL Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht LCTRL P  &none
+                &none  &ht LALT A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &ht LALT SQT &none
+                &none  &lt FUNC Z  &kp X  &kp C  &kp V  &lt MATH B  &lt MATH N  &kp M  &kp COMMA  &kp DOT  &lt FUNC FSLH &none
+                &ht LGUI ESC  &ht LSHFT SPACE  &lt SYMB TAB  &lt SYMB RET &sk RSHIFT &ht_bspc RGUI 0 
             >;
         };
 
@@ -82,22 +107,22 @@
         win {
             label = "Windows";
             bindings = <
-                &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
-                &none  &kp A  &ht LALT S  &ht LGUI D  &lt SYMB F  &lt MATH G  &lt MATH H  &lt SYMB J  &ht RGUI K  &ht RALT L  &kp SQT &none
-                &none  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &none
-                &ht LCTRL ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt FUNC RET &sk RSHIFT  &ht_bspc RCTRL 0
+                &none  &ht LGUI Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht RGUI P  &none
+                &none  &ht LALT A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &ht LALT SQT &none
+                &none  &lt FUNC Z  &kp X  &kp C  &kp V  &lt MATH B  &lt MATH N  &kp M  &kp COMMA  &kp DOT  &lt FUNC FSLH &none
+                &ht LCTRL ESC  &ht LSHFT SPACE  &lt SYMB TAB  &lt SYMB RET &sk RSHIFT &ht_bspc RCTRL 0 
             >;
         };
 
-        // // 2 BASE -- GAME
-        // // @todo
+        // 2 BASE -- GAME
+        // @todo -- untested
         game {
             label = "Game";
             bindings = <
                 &kp ESC  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &bspc_del 
                 &mo SYMB  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SQT &mo SYMB
-                &mo MATH  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &mo MATH
-                &kp LCTRL &kp SPACE  &lt FUNC TAB  &lt FUNC RET &kp RSHIFT  &ht_bspc RCTRL 0
+                &mo FUNC  &kp Z  &kp X  &kp C  &kp V  &lt MATH B  &lt MATH N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &mo FUNC
+                &kp LCTRL &kp SPACE  &kp TAB  &kp RET  &kp RSHIFT  &kp RCTRL
             >;
         };
 
@@ -106,9 +131,9 @@
             label = "Numpad";
             bindings = <
                 &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp KP_SLASH &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS &bspc_del
-                &none  &kp TILDE  &none  &none  &none  &none  &kp ASTRK  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS  &kp KP_EQUAL
-                &none  &kp GRAVE  &none  &none  &none  &none  &kp KP_COMMA  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT  &kp KP_ENTER
-                &ht LGUI ESC  &ht LSHFT SPACE  &lt FUNC TAB  &lt MATH TAB  &lt FUNC SPACE  &lt FUNC KP_N0 
+                &none  &none  &none  &none  &none  &none  &kp ASTRK  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS  &kp KP_EQUAL
+                &none  &none  &none  &none  &none  &mo MATH &lt MATH KP_COMMA  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT  &kp KP_ENTER
+                &kp ESC  &kp SPACE  &lt SYMB TAB  &lt SYMB RET  &kp RSHIFT  &ht_bspc RCTRL 0
             >;
         };
 
@@ -116,20 +141,22 @@
         math {
             label = "Math";
             bindings = <
-                &none  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp MINUS  &none
-                &none  &none  &none  &none  &none  &trans  &trans  &kp N4  &kp N5  &kp N6  &kp PLUS  &none
-                &none  &none  &none  &none  &none  &none  &kp EQUAL &kp N1  &kp N2  &kp N3  &trans  &none
-                &trans  &trans  &trans  &trans  &trans  &kp N0
+                &none  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0 &none
+                &none  &none  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp N4  &kp N5  &kp N6  &kp PLUS  &none
+                &none  &none  &kp UNDER  &kp EQUAL  &kp FSLH  &mo MATH &mo MATH &kp N1  &kp N2  &kp N3  &kp EQUAL  &none
+                &trans  &trans  &trans  &trans  &kp KP_DOT  &kp N0
             >;
         };
 
         // 5 MOD -- FUNC
         func {
+            // f3 (expose) duplicated in top left
+            // f19 used for MEH key
             label = "Function";
             bindings = <
                 &none  &kp F3  &kp F7  &kp F8  &kp F9  &kp F12  &kp C_BRI_DN  &kp C_BRI_UP  &kp K_MUTE  &kp K_VOL_DN &kp K_VOL_UP &none
-                &none  &kp F19  &kp F4  &kp F5  &kp F6  &kp F11  &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp DEL  &none
-                &none  &none  &kp F1  &kp F2  &kp F3  &kp F10  &kp HOME  &kp PAGE_UP  &kp PAGE_DOWN  &kp END &kp INS &none
+                &none  &kp F19  &kp F4  &kp F5  &kp F6  &kp F11  &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp INSERT &none
+                &none  &mo FUNC &kp F1  &kp F2  &kp F3  &lt MATH F10  &lt MATH HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END &mo FUNC &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
@@ -138,9 +165,9 @@
         symbolic {
             label = "Symbol";
             bindings = <
-                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp LPAR  &kp RPAR  &none
-                &none  &kp PLUS  &kp MINUS  &kp EQUAL  &kp TILDE  &kp GRAVE  &kp UNDER  &kp PIPE  &kp LBRC  &kp RBRC  &kp COLON &none
-                &none  &kp LT  &kp SLASH  &kp LT  &kp ASTRK  &trans  &trans  &kp BACKSLASH  &kp LBKT  &kp RBKT  &kp SEMI  &none
+                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp PIPE  &kp BACKSLASH  &none
+                &none  &kp GRAVE  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp LPAR  &kp LBKT  &kp LBRC  &kp SEMI &none
+                &none  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &mo MATH  &mo MATH  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
@@ -149,9 +176,9 @@
         conf {
             label = "Config";
             bindings = <
-                &none  &to MAC  &to WIN  &to GAME  &to NPAD  &none  &none  &none  &none  &none  &none  &none
-                &none  &none  &none  &none  &none  &none  &bt BT_CLR &none  &none  &none  &none  &none
+                &none  &to MAC  &to WIN  &to GAME  &to NPAD  &none  &bt BT_CLR &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &none  &none  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none
+                &none  &none  &none  &none  &none  &mo MATH  &mo MATH  &none  &none  &none  &none  &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
