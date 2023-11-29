@@ -20,6 +20,11 @@
 // still @todo:
 // - finalize gaming layer
 // - set up play/pause/skip (shift behavior for arrow keys?)
+// - reconfigure tab:
+//      - single click: math layer tap
+//      - single hold: math layer hold
+//      - double tap: symbol layer tap
+//      - double hold: symbol layer hold
 
 / {
     combos {
@@ -33,11 +38,22 @@
     };
 
     behaviors {
-        ht: hold_tap {
-            label = "hold_tap";
+        ht_tp: hold_tap_tap_preferred {
+            label = "hold_tap_tap_preferred";
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
             flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <150>;
+            global-quick-tap;
+            bindings = <&kp>, <&kp>;
+        };
+
+        ht_hp: hold_tap_hold_preferred {
+            label = "hold_tap_hold_preferred";
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            flavor = "hold-preferred";
             tapping-term-ms = <220>;
             quick-tap-ms = <150>;
             global-quick-tap;
@@ -61,7 +77,7 @@
             label = "hold_tap_backspace_delete";
             compatible = "zmk,behavior-hold-tap";
             #binding-cells = <2>;
-            flavor = "tap-preferred";
+            flavor = "hold-preferred";
             tapping-term-ms = <220>;
             quick-tap-ms = <150>;
             global-quick-tap;
@@ -96,10 +112,10 @@
         mac {
             label = "Mac";
             bindings = <
-                &none  &ht LCTRL Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht LCTRL P  &none
-                &none  &ht LALT A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &ht LALT SQT &none
-                &none  &lt FUNC Z  &kp X  &kp C  &kp V  &lt MATH B  &lt MATH N  &kp M  &kp COMMA  &kp DOT  &lt FUNC FSLH &none
-                &ht LGUI ESC  &ht LSHFT SPACE  &lt SYMB TAB  &lt SYMB RET &sk RSHIFT &ht_bspc RGUI 0 
+                &none  &ht_tp LCTRL Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht_tp LCTRL P  &none
+                &none  &lt FUNC A  &kp S  &kp D  &kp F  &lt SYMB G  &lt SYMB H  &kp J  &kp K  &kp L  &lt FUNC SQT &none
+                &none  &ht_tp LALT Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &ht_tp LALT FSLH &none
+                &ht_hp LGUI ESC  &ht_hp LSHFT SPACE  &lt MATH TAB  &lt MATH RET &sk RSHIFT &ht_bspc RGUI 0 
             >;
         };
 
@@ -107,10 +123,10 @@
         win {
             label = "Windows";
             bindings = <
-                &none  &ht LGUI Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht RGUI P  &none
-                &none  &ht LALT A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &ht LALT SQT &none
-                &none  &lt FUNC Z  &kp X  &kp C  &kp V  &lt MATH B  &lt MATH N  &kp M  &kp COMMA  &kp DOT  &lt FUNC FSLH &none
-                &ht LCTRL ESC  &ht LSHFT SPACE  &lt SYMB TAB  &lt SYMB RET &sk RSHIFT &ht_bspc RCTRL 0 
+                &none  &ht_tp LGUI Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht_tp RGUI P  &none
+                &none  &lt FUNC A  &kp S  &kp D  &kp F  &lt SYMB G  &lt SYMB H  &kp J  &kp K  &kp L  &lt FUNC SQT &none
+                &none  &ht_tp LALT Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &ht_tp LALT FSLH &none
+                &ht_hp LCTRL ESC  &ht_hp LSHFT SPACE  &lt SYMB TAB  &lt SYMB RET &sk RSHIFT &ht_bspc RCTRL 0 
             >;
         };
 
@@ -120,8 +136,8 @@
             label = "Game";
             bindings = <
                 &kp ESC  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &bspc_del 
-                &mo SYMB  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SQT &mo SYMB
-                &mo FUNC  &kp Z  &kp X  &kp C  &kp V  &lt MATH B  &lt MATH N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &mo FUNC
+                &mo FUNC  &kp A  &kp S  &kp D  &kp F  &lt SYMB G  &lt SYMB H  &kp J  &kp K  &kp L  &kp SQT &mo FUNC
+                &mo MATH  &kp Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &mo MATH
                 &kp LCTRL &kp SPACE  &kp TAB  &kp RET  &kp RSHIFT  &kp RCTRL
             >;
         };
@@ -131,9 +147,9 @@
             label = "Numpad";
             bindings = <
                 &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp KP_SLASH &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS &bspc_del
-                &none  &none  &none  &none  &none  &none  &kp ASTRK  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS  &kp KP_EQUAL
-                &none  &none  &none  &none  &none  &mo MATH &lt MATH KP_COMMA  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT  &kp KP_ENTER
-                &kp ESC  &kp SPACE  &lt SYMB TAB  &lt SYMB RET  &kp RSHIFT  &ht_bspc RCTRL 0
+                &none  &none  &none  &none  &none  &mo SYMB  &lt MATH ASTRK  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS  &kp KP_EQUAL
+                &none  &none  &none  &none  &none  &none  &kp KP_COMMA  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT  &kp KP_ENTER
+                &kp ESC  &kp SPACE  &lt MATH TAB  &lt MATH RET  &kp RSHIFT  &ht_bspc RCTRL 0
             >;
         };
 
@@ -143,7 +159,7 @@
             bindings = <
                 &none  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0 &none
                 &none  &none  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp N4  &kp N5  &kp N6  &kp PLUS  &none
-                &none  &none  &kp UNDER  &kp EQUAL  &kp FSLH  &mo MATH &mo MATH &kp N1  &kp N2  &kp N3  &kp EQUAL  &none
+                &none  &none  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp N1  &kp N2  &kp N3  &kp EQUAL  &none
                 &trans  &trans  &trans  &trans  &kp KP_DOT  &kp N0
             >;
         };
@@ -155,8 +171,8 @@
             label = "Function";
             bindings = <
                 &none  &kp F3  &kp F7  &kp F8  &kp F9  &kp F12  &kp C_BRI_DN  &kp C_BRI_UP  &kp K_MUTE  &kp K_VOL_DN &kp K_VOL_UP &none
-                &none  &kp F19  &kp F4  &kp F5  &kp F6  &kp F11  &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp INSERT &none
-                &none  &mo FUNC &kp F1  &kp F2  &kp F3  &lt MATH F10  &lt MATH HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END &mo FUNC &none
+                &none  &mo FUNC  &kp F4  &kp F5  &kp F6  &kp F11  &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp INSERT &none
+                &none  &kp F19  &kp F1  &kp F2  &kp F3  &kp F10  &kp HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END &mo FUNC &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
@@ -167,7 +183,7 @@
             bindings = <
                 &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp PIPE  &kp BACKSLASH  &none
                 &none  &kp GRAVE  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp LPAR  &kp LBKT  &kp LBRC  &kp SEMI &none
-                &none  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &mo MATH  &mo MATH  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &none
+                &none  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
@@ -178,7 +194,7 @@
             bindings = <
                 &none  &to MAC  &to WIN  &to GAME  &to NPAD  &none  &bt BT_CLR &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &none  &none  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none
-                &none  &none  &none  &none  &none  &mo MATH  &mo MATH  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
