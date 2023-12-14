@@ -29,9 +29,10 @@
 #define GAME 2
 #define NPAD 3
 #define MATH 4
-#define FUNC 5
-#define SYMB 6
+#define SYMB 5
+#define FUNC 6
 #define CONF 7
+#define LOCK 8
 
 // convenience method to define tap, hold, double-tap hold behavior
 
@@ -41,7 +42,7 @@ dth_##code: code { \
     label = ###code; \
     #binding-cells = <0>; \
     bindings = <press1>, <press2>; \
-    tapping-term-ms = <220>; \
+    tapping-term-ms = <120>; \
 };
 
 // convenience partial to reuse hold tap behavior
@@ -49,7 +50,7 @@ dth_##code: code { \
 #define HOLD_TAP_PARTIAL \
     compatible = "zmk,behavior-hold-tap"; \
     #binding-cells = <2>; \
-    tapping-term-ms = <220>; \
+    tapping-term-ms = <120>; \
     quick-tap-ms = <150>; \
     global-quick-tap;
 
@@ -87,6 +88,16 @@ dth_##code: code { \
             HOLD_TAP_PARTIAL
         };
 
+        // special hold_tap for the backspace_delete behavior
+        // https://www.reddit.com/r/zmk/comments/12ujlmb/combing_modmorph_and_layer_tap/
+
+        ht_bspc: hold_tap_backspace_delete {
+            label = "hold_tap_backspace_delete";
+            flavor = "hold-preferred";
+            bindings = <&mo>, <&bspc_del>;
+            HOLD_TAP_PARTIAL
+        };
+
         // convert backspace to delete with shift
 
         bspc_del: backspace_delete {
@@ -97,26 +108,12 @@ dth_##code: code { \
             mods = <(MOD_LSFT|MOD_RSFT)>;
         };
 
-        // special hold_tap for the backspace_delete behavior
-        // https://www.reddit.com/r/zmk/comments/12ujlmb/combing_modmorph_and_layer_tap/
-
-        ht_bspc: hold_tap_backspace_delete {
-            label = "hold_tap_backspace_delete";
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            flavor = "hold-preferred";
-            tapping-term-ms = <220>;
-            quick-tap-ms = <150>;
-            global-quick-tap;
-            bindings = <&mo>, <&bspc_del>;
-        };
-
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb1, &ht_hp LGUI ESC, &kp LCTRL)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb2, &ht_hp LSHFT SPACE, &mo SYMB)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb3, &ht_hp_layer FUNC TAB, &mo MATH)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb4, &ht_hp_layer FUNC RET, &mo MATH)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb5, &sk RSHIFT, &mo SYMB)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb6, &ht_bspc RGUI 0, &kp RCTRL)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb1, &ht_hp LGUI ESC, &ht_hp LCTRL ESC)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb2, &ht_hp LSHFT SPACE, &ht_hp SYMB SPACE)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb3, &ht_hp_layer FUNC TAB, &ht_hp MATH TAB)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb4, &ht_hp_layer FUNC RET, &ht_hp MATH RET)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb5, &sk RSHIFT, &ht_hp SYMB RSHIFT)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb6, &ht_bspc RGUI 0, &ht_bspc RCTRL 0)
 
     };
 
@@ -130,8 +127,6 @@ dth_##code: code { \
         };
     };
 
-
-
     keymap {
         compatible = "zmk,keymap";
 
@@ -139,9 +134,9 @@ dth_##code: code { \
         mac {
             label = "Mac";
             bindings = <
-                &none  &ht_tp LCTRL Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht_tp LCTRL P  &none
-                &none  &lt FUNC A  &kp S  &kp D  &kp F  &lt SYMB G  &lt SYMB H  &kp J  &kp K  &kp L  &lt FUNC SQT &none
-                &none  &ht_tp LALT Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &ht_tp LALT FSLH &none
+                &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
+                &none  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SQT &none
+                &none  &kp Z  &kp X  &kp C  &kp V  &ht_hp_layer LOCK B  &ht_hp_layer LOCK N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &none
                 &dth_thumb1  &dth_thumb2  &dth_thumb3  &dth_thumb4  &dth_thumb5  &dth_thumb6
             >;
         };
@@ -158,7 +153,6 @@ dth_##code: code { \
         };
 
         // 2 BASE -- GAME
-        // @todo -- untested
         game {
             label = "Game";
             bindings = <
@@ -186,12 +180,23 @@ dth_##code: code { \
             bindings = <
                 &none  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0 &none
                 &none  &none  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp N4  &kp N5  &kp N6  &kp PLUS  &none
-                &none  &none  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp N1  &kp N2  &kp N3  &kp EQUAL  &none
+                &none  &none  &kp UNDER  &kp EQUAL  &kp FSLH  &tog MAC  &tog MAC  &kp N1  &kp N2  &kp N3  &kp EQUAL  &none
                 &trans  &trans  &trans  &trans  &kp KP_DOT  &kp N0
             >;
         };
 
-        // 5 MOD -- FUNC
+        // 5 MOD -- SYMBOL
+        symbolic {
+            label = "Symbol";
+            bindings = <
+                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp PIPE  &kp BACKSLASH  &none
+                &none  &kp GRAVE  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp LPAR  &kp LBKT  &kp LBRC  &kp SEMI &none
+                &mo MATH  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &mo MATH
+                &trans  &trans  &trans  &trans  &trans  &trans 
+            >;
+        };
+
+        // 6 MOD -- FUNC
         func {
             // f3 (expose) duplicated in top left
             // f19 used for MEH key
@@ -204,16 +209,7 @@ dth_##code: code { \
             >;
         };
 
-        // 6 MOD -- SYMB
-        symbolic {
-            label = "Symbol";
-            bindings = <
-                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp PIPE  &kp BACKSLASH  &none
-                &none  &kp GRAVE  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp LPAR  &kp LBKT  &kp LBRC  &kp SEMI &none
-                &mo MATH  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &mo MATH
-                &trans  &trans  &trans  &trans  &trans  &trans 
-            >;
-        };
+      
 
         // 7 MOD -- CONF
         conf {
@@ -223,6 +219,17 @@ dth_##code: code { \
                 &none  &none  &none  &none  &none  &none  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none
                 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
+            >;
+        };
+
+        // 8 MOD -- Lock
+        lock {
+            label = "Lock";
+            bindings = <
+                &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
+                &none  &tog SYMB  &tog MATH  &tog MATH  &tog SYMB  &none 
             >;
         };
 
