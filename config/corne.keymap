@@ -6,7 +6,23 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/outputs.h>
 
-// Home row mods macro
+// still @todo:
+// - finalize gaming layer
+// - set up play/pause/skip (shift behavior for arrow keys?)
+// - reconfigure tab:
+//      - single click: math layer tap
+//      - single hold: math layer hold
+//      - double tap: symbol layer tap
+//      - double hold: symbol layer hold
+
+// Reference for binding behaviour keywords:
+// &kp: keypress
+// &none: no signal
+// &trans: inherit signal from base layer
+// &lt: (layer tap) for hold tap behaviors with custom layer changes (Mac, Symbol, etc)
+// &ht: (custom hold tap) for hold tap behaviors with modal changes (control, alt, shift, etc)
+// &sk: (sticky key) allows double-tab for sticky behavior
+// &mo: (momentary layer) changes layer while key is pressed
 
 #define MAC 0
 #define WIN 1
@@ -17,14 +33,25 @@
 #define SYMB 6
 #define CONF 7
 
-// still @todo:
-// - finalize gaming layer
-// - set up play/pause/skip (shift behavior for arrow keys?)
-// - reconfigure tab:
-//      - single click: math layer tap
-//      - single hold: math layer hold
-//      - double tap: symbol layer tap
-//      - double hold: symbol layer hold
+// convenience method to define tap, hold, double-tap hold behavior
+
+#define TAP_DANCE_DOUBLE_TAP_HOLD(code, press1, press2) \
+dth_##code: code { \
+    compatible = "zmk,behavior-tap-dance"; \
+    label = ###code; \
+    #binding-cells = <0>; \
+    bindings = <press1>, <press2>; \
+    tapping-term-ms = <220>; \
+};
+
+// convenience partial to reuse hold tap behavior
+
+#define HOLD_TAP_PARTIAL \
+    compatible = "zmk,behavior-hold-tap"; \
+    #binding-cells = <2>; \
+    tapping-term-ms = <220>; \
+    quick-tap-ms = <150>; \
+    global-quick-tap;
 
 / {
     combos {
@@ -38,26 +65,26 @@
     };
 
     behaviors {
+
         ht_tp: hold_tap_tap_preferred {
             label = "hold_tap_tap_preferred";
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <220>;
-            quick-tap-ms = <150>;
-            global-quick-tap;
             bindings = <&kp>, <&kp>;
+            HOLD_TAP_PARTIAL
         };
 
         ht_hp: hold_tap_hold_preferred {
             label = "hold_tap_hold_preferred";
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
             flavor = "hold-preferred";
-            tapping-term-ms = <220>;
-            quick-tap-ms = <150>;
-            global-quick-tap;
             bindings = <&kp>, <&kp>;
+            HOLD_TAP_PARTIAL
+        };
+
+        ht_hp_layer: hold_tap_hold_preferred_layer {
+            label = "hold_tap_hold_preferred_layer";
+            flavor = "hold-preferred";
+            bindings = <&mo>, <&kp>;
+            HOLD_TAP_PARTIAL
         };
 
         // convert backspace to delete with shift
@@ -83,11 +110,18 @@
             global-quick-tap;
             bindings = <&mo>, <&bspc_del>;
         };
+
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb1, &ht_hp LGUI ESC, &kp LCTRL)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb2, &ht_hp LSHFT SPACE, &mo SYMB)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb3, &ht_hp_layer FUNC TAB, &mo MATH)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb4, &ht_hp_layer FUNC RET, &mo MATH)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb5, &sk RSHIFT, &mo SYMB)
+        TAP_DANCE_DOUBLE_TAP_HOLD(thumb6, &ht_bspc RGUI 0, &kp RCTRL)
+
     };
 
     // this tri-layer will toggle the config layer if MATH and SYMB are toggled.
     // requiring 2 keys might prevent accidental triggers.
-
     conditional_layers {
         compatible = "zmk,conditional-layers";
         tri_layer {
@@ -96,14 +130,7 @@
         };
     };
 
-    // Reference for binding behaviour keywords:
-    // &kp: keypress
-    // &none: no signal
-    // &trans: inherit signal from base layer
-    // &lt: (layer tap) for hold tap behaviors with custom layer changes (Mac, Symbol, etc)
-    // &ht: (custom hold tap) for hold tap behaviors with modal changes (control, alt, shift, etc)
-    // &sk: (sticky key) allows double-tab for sticky behavior
-    // &mo: (momentary layer) changes layer while key is pressed
+
 
     keymap {
         compatible = "zmk,keymap";
@@ -115,7 +142,7 @@
                 &none  &ht_tp LCTRL Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &ht_tp LCTRL P  &none
                 &none  &lt FUNC A  &kp S  &kp D  &kp F  &lt SYMB G  &lt SYMB H  &kp J  &kp K  &kp L  &lt FUNC SQT &none
                 &none  &ht_tp LALT Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &ht_tp LALT FSLH &none
-                &ht_hp LGUI ESC  &ht_hp LSHFT SPACE  &lt MATH TAB  &lt MATH RET &sk RSHIFT &ht_bspc RGUI 0 
+                &dth_thumb1  &dth_thumb2  &dth_thumb3  &dth_thumb4  &dth_thumb5  &dth_thumb6
             >;
         };
 
@@ -183,7 +210,7 @@
             bindings = <
                 &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp PIPE  &kp BACKSLASH  &none
                 &none  &kp GRAVE  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp LPAR  &kp LBKT  &kp LBRC  &kp SEMI &none
-                &none  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &none
+                &mo MATH  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &mo MATH
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
