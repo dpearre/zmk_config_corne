@@ -27,50 +27,101 @@
 #define MAC 0
 #define WIN 1
 #define GAME 2
-#define NPAD 3
-#define MATH 4
-#define SYMB 5
-#define FUNC 6
-#define CONF 7
-#define LOCK 8
+#define MATH 3
+#define SYMB 4
+#define FUNC 5
+#define CONF 6
+#define LOCK 7
 
 // convenience method to define tap, hold, double-tap hold behavior
 
-#define TAP_DANCE_DOUBLE_TAP_HOLD(code, press1, press2) \
-dth_##code: code { \
-    compatible = "zmk,behavior-tap-dance"; \
-    label = ###code; \
-    #binding-cells = <0>; \
-    bindings = <press1>, <press2>; \
-    tapping-term-ms = <120>; \
-};
+// #define TAP_DANCE_DOUBLE_TAP_HOLD(code, press1, press2) \
+// dth_##code: code { \
+//     compatible = "zmk,behavior-tap-dance"; \
+//     label = ###code; \
+//     #binding-cells = <0>; \
+//     bindings = <press1>, <press2>; \
+//     tapping-term-ms = <120>; \
+// };
+// example:
+// TAP_DANCE_DOUBLE_TAP_HOLD(thumb1, &ht_hp LGUI ESC, &ht_hp LCTRL ESC)
 
 // convenience partial to reuse hold tap behavior
 
 #define HOLD_TAP_PARTIAL \
     compatible = "zmk,behavior-hold-tap"; \
     #binding-cells = <2>; \
-    tapping-term-ms = <120>; \
+    tapping-term-ms = <220>; \
     quick-tap-ms = <150>; \
     global-quick-tap;
+
+#define HRML(k1,k2,k3,k4,k5) \
+    &ht_tp LGUI k1 \
+    &ht_tp LALT k2 \
+    &ht_tp LSHFT k3 \
+    &ht_tp LCTRL k4 \
+    &ht_hp_layer LOCK k5
+
+#define HRMR(k1,k2,k3,k4,k5) \
+    &ht_hp_layer LOCK k1 \
+    &ht_tp RCTRL k2 \
+    &ht_tp RSHFT k3 \
+    &ht_tp RALT k4 \
+    &ht_tp RGUI k5
 
 / {
     combos {
         compatible = "zmk,combos";
+
         // use vim's jk combo for escape
-        combo_esc {
+        combo_esc_1 {
             timeout-ms = <50>;
             key-positions = <19 20>; // j and k positions
             bindings = <&kp ESC>;
+        };
+        combo_esc_2 {
+            timeout-ms = <50>;
+            key-positions = <1 2>; // q and w
+            bindings = <&kp ESC>;
+        };
+
+        // Returns to base mac layer if we are stuck 
+        combo_return_to_base {
+            timeout-ms = <50>;
+            key-positions = <1 13 25>; // q, a, z
+            bindings = <&to MAC>;
+        };
+    };
+
+    macros {
+        back_dir: back_dir {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            label = "back_dir";
+            bindings = <&macro_tap &kp DOT &kp DOT &kp FSLH>; 
         };
     };
 
     behaviors {
 
+        ht_st: hold_tap_with_sticky_layer {
+            label = "hold_tap_with_sticky_layer";
+            flavor = "hold-preferred";
+            bindings = <&kp>, <&sl>;
+            HOLD_TAP_PARTIAL
+        };
+
         ht_tp: hold_tap_tap_preferred {
             label = "hold_tap_tap_preferred";
             flavor = "tap-preferred";
             bindings = <&kp>, <&kp>;
+            HOLD_TAP_PARTIAL
+        };
+
+        ht_tp_layer: hold_tap_tap_preferred_layer {
+            label = "hold_tap_tap_preferred_layer";
+            flavor = "tap-preferred";
+            bindings = <&mo>, <&kp>;
             HOLD_TAP_PARTIAL
         };
 
@@ -108,13 +159,6 @@ dth_##code: code { \
             mods = <(MOD_LSFT|MOD_RSFT)>;
         };
 
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb1, &ht_hp LGUI ESC, &ht_hp LCTRL ESC)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb2, &ht_hp LSHFT SPACE, &ht_hp SYMB SPACE)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb3, &ht_hp_layer FUNC TAB, &ht_hp MATH TAB)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb4, &ht_hp_layer FUNC RET, &ht_hp MATH RET)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb5, &sk RSHIFT, &ht_hp SYMB RSHIFT)
-        TAP_DANCE_DOUBLE_TAP_HOLD(thumb6, &ht_bspc RGUI 0, &ht_bspc RCTRL 0)
-
     };
 
     // this tri-layer will toggle the config layer if MATH and SYMB are toggled.
@@ -135,9 +179,9 @@ dth_##code: code { \
             label = "Mac";
             bindings = <
                 &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
-                &none  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SQT &none
-                &none  &kp Z  &kp X  &kp C  &kp V  &ht_hp_layer LOCK B  &ht_hp_layer LOCK N  &kp M  &kp COMMA  &kp DOT  &kp FSLH &none
-                &dth_thumb1  &dth_thumb2  &dth_thumb3  &dth_thumb4  &dth_thumb5  &dth_thumb6
+                &none  HRML(A, S, D, F, G)  HRMR(H, J, K, L, SQT)  &none
+                &none  &ht_tp_layer FUNC Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &ht_tp_layer FUNC FSLH  &none
+                &ht_st LGUI SYMB  &ht_hp LSHFT SPACE  &lt MATH TAB  &lt MATH RET &sk RSHIFT &ht_bspc SYMB 0
             >;
         };
 
@@ -163,84 +207,62 @@ dth_##code: code { \
             >;
         };
 
-        // 3 BASE -- NPAD
-        numpad {
-            label = "Numpad";
-            bindings = <
-                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp KP_SLASH &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS &bspc_del
-                &none  &none  &none  &none  &none  &mo SYMB  &lt MATH ASTRK  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS  &kp KP_EQUAL
-                &none  &none  &none  &none  &none  &none  &kp KP_COMMA  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_DOT  &kp KP_ENTER
-                &kp ESC  &kp SPACE  &lt MATH TAB  &lt MATH RET  &kp RSHIFT  &ht_bspc RCTRL 0
-            >;
-        };
-
-        // 4 MOD -- MATH
+        // 3 MOD -- MATH
         math {
             label = "Math";
             bindings = <
-                &none  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0 &none
-                &none  &none  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp N4  &kp N5  &kp N6  &kp PLUS  &none
-                &none  &none  &kp UNDER  &kp EQUAL  &kp FSLH  &tog MAC  &tog MAC  &kp N1  &kp N2  &kp N3  &kp EQUAL  &none
-                &trans  &trans  &trans  &trans  &kp KP_DOT  &kp N0
+                &none  &none  &none  &none  &none  &none  &kp FSLH  &kp KP_N7  &kp KP_N8  &kp KP_N9  &kp KP_MINUS  &none
+                &none  &none  &kp MINUS  &kp PLUS  &kp EQUAL  &mo LOCK  &lt LOCK ASTRK  &kp KP_N4  &kp KP_N5  &kp KP_N6  &kp KP_PLUS  &none
+                &none  &kp CARET  &kp FSLH  &kp ASTRK  &none  &none  &none  &kp KP_N1  &kp KP_N2  &kp KP_N3  &kp KP_ENTER  &none
+                &trans  &trans  &tog MATH  &tog MATH  &kp KP_DOT  &lt SYMB KP_N0
             >;
         };
 
-        // 5 MOD -- SYMBOL
+        // 4 MOD -- SYMBOL
         symbolic {
             label = "Symbol";
             bindings = <
-                &none  &kp EXCL  &kp AT  &kp HASH  &kp DLLR  &kp PRCNT  &kp CARET  &kp AMPS  &kp ASTRK  &kp PIPE  &kp BACKSLASH  &none
-                &none  &kp GRAVE  &kp MINUS  &kp PLUS  &kp ASTRK  &none  &none  &kp LPAR  &kp LBKT  &kp LBRC  &kp SEMI &none
-                &mo MATH  &kp TILDE  &kp UNDER  &kp EQUAL  &kp FSLH  &none  &none  &kp RPAR  &kp RBKT  &kp RBRC  &kp COLON  &mo MATH
-                &trans  &trans  &trans  &trans  &trans  &trans 
+                &none  &kp GRAVE  &kp LT  &kp GT  &kp HASH  &back_dir  &kp TILDE  &kp AMPS  &kp LBKT  &kp RBKT  &kp PRCNT  &none
+                &none  &kp EXCL  &kp MINUS  &kp PLUS  &kp EQUAL  &lt LOCK UNDER  &mo LOCK  &kp PIPE  &kp LPAR  &kp RPAR  &kp QMARK  &none
+                &none  &kp CARET  &kp FSLH  &kp ASTRK  &kp BSLH  &none  &none  &kp DLLR  &kp LBRC  &kp RBRC  &kp AT  &none
+                &tog SYMB  &none  &none  &none  &none  &tog SYMB
             >;
         };
 
-        // 6 MOD -- FUNC
+        // 5 MOD -- FUNC
         func {
             // f3 (expose) duplicated in top left
             // f19 used for MEH key
             label = "Function";
             bindings = <
                 &none  &kp F3  &kp F7  &kp F8  &kp F9  &kp F12  &kp C_BRI_DN  &kp C_BRI_UP  &kp K_MUTE  &kp K_VOL_DN &kp K_VOL_UP &none
-                &none  &mo FUNC  &kp F4  &kp F5  &kp F6  &kp F11  &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp INSERT &none
-                &none  &kp F19  &kp F1  &kp F2  &kp F3  &kp F10  &kp HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END &mo FUNC &none
+                &none  &kp F19  &kp F4  &kp F5  &kp F6  &kp F11  &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp INSERT &none
+                &none  &trans  &kp F1  &kp F2  &kp F3  &kp F10  &kp HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END &trans &none
                 &trans  &trans  &trans  &trans  &trans  &trans 
             >;
         };
 
-      
-
-        // 7 MOD -- CONF
+        // 6 MOD -- CONF
         conf {
             label = "Config";
             bindings = <
-                &none  &to MAC  &to WIN  &to GAME  &to NPAD  &none  &bt BT_CLR &none  &none  &none  &none  &none
+                &none  &to MAC  &to WIN  &to GAME  &none  &none  &bt BT_CLR &none  &none  &none  &none  &none
+                &none  &none  &none  &none  &none  &mo LOCK  &mo LOCK  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &none  &none  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &none
-                &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-                &trans  &trans  &trans  &trans  &trans  &trans 
+                &tog CONF  &tog CONF  &tog CONF  &tog CONF  &tog CONF  &tog CONF 
             >;
         };
 
-        // 8 MOD -- Lock
+        // 7 MOD -- Lock
         lock {
             label = "Lock";
             bindings = <
                 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
                 &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-                &none  &tog SYMB  &tog MATH  &tog MATH  &tog SYMB  &none 
+                &tog SYMB  &none  &tog MATH  &tog MATH  &none  &tog SYMB
             >;
         };
-
-        // layer_name {
-        //     bindings = <
-        //         &none &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-        //         &none &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-        //         &none &none  &none  &none  &none  &none  &none  &none  &none  &none  &none  &none
-        //         &none  &none  &none  &none  &none  &none
-        //     >;
-        // };
 
     };
 };
