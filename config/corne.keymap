@@ -96,40 +96,28 @@
             bindings = <&to MAC>;
         };
 
-        // combo_double_inner_thumb {
-        //     timeout-ms = <50>;
-        //     key-positions = <36 37>; 
-        //     bindings = <&tbd>;
-        // };
-
         combo_double_middle_thumb {
             timeout-ms = <50>;
-            key-positions = <35 38>; 
+            key-positions = <37 40>; 
             bindings = <&caps_word>;
         };
-
-        // combo_double_outer_thumb {
-        //     timeout-ms = <50>;
-        //     key-positions = <34 39>;
-        //     bindings = <&tbd>;
-        // };
 
         combo_cut {
             timeout-ms = <50>;
             key-positions = <14 15>; 
-            bindings = <&kp K_CUT>;
+            bindings = <&kp LG(X)>;
         };
 
         combo_copy {
             timeout-ms = <50>;
             key-positions = <15 16>; 
-            bindings = <&kp K_COPY>;
+            bindings = <&kp LG(C)>;
         };
 
         combo_paste {
             timeout-ms = <50>;
-            key-positions = <17 18>; 
-            bindings = <&kp K_PASTE>;
+            key-positions = <16 17>; 
+            bindings = <&kp LG(V)>;
         };
     };
 
@@ -212,19 +200,19 @@
 
     keymap {
         compatible = "zmk,keymap";
-
+        
         // 0 BASE -- MAC
         mac {
             label = "Mac";
             bindings = <
                 &none  &kp Q  &kp W &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &none
-                &none  HRML(A, S, D, F, G)  HRMR(H, J, K, L, SQT)  &none
-                &none  &ht_tp_layer FUNC Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &ht_tp_layer FUNC FSLH  &none
+                &none  HRML(A, S, D, F, G)  HRMR(H, J, K, L, SEMI)  &none
+                &none  &ht_tp_layer FUNC Z  &kp X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &ht_tp_layer FUNC SQT &none
                 &ht_st LGUI SYMB  &ht_hp LSHFT SPACE  &lt MATH TAB  &lt MATH RET &sk RSHIFT &ht_bspc SYMB 0
             >;
         };
 
-        // 1 BASE -- WIN
+        // 1 BASE -- WIN;
         win {
             label = "Windows";
             bindings = <
