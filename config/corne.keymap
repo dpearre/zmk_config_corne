@@ -113,6 +113,24 @@
         //     key-positions = <34 39>;
         //     bindings = <&tbd>;
         // };
+
+        combo_cut {
+            timeout-ms = <50>;
+            key-positions = <14 15>; 
+            bindings = <&kp K_CUT>;
+        };
+
+        combo_copy {
+            timeout-ms = <50>;
+            key-positions = <15 16>; 
+            bindings = <&kp K_COPY>;
+        };
+
+        combo_paste {
+            timeout-ms = <50>;
+            key-positions = <17 18>; 
+            bindings = <&kp K_PASTE>;
+        };
     };
 
     macros {
